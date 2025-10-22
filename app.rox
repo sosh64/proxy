@@ -44,6 +44,7 @@
   <script src="https://unpkg.com/preact@10.19.2/hooks/dist/hooks.min.js"></script>
   <script src="https://unpkg.com/preact@10.19.2/compat/dist/compat.min.js"></script>
   <script>
+    // expose the needed objects globally so we can use them in the script below
     const { h, render } = preact;
     const { useState } = preactHooks;
   </script>
@@ -54,16 +55,17 @@
   <main>
     <div class="card" id="app-root"></div>
   </main>
-  <footer>© 2025 Proton – Lumo Demo</footer>
 
-  <!-- ==== Embedded JavaScript (no build step) ==== -->
+  <!-- ==== Embedded JavaScript (no JSX build step) ==== -->
   <script>
+    // ----- Functional component written with plain JS (no JSX) -----
     function App() {
       const [url, setUrl] = useState('');
       const [output, setOutput] = useState('');
       const [loading, setLoading] = useState(false);
 
-      const fetchViaProxy = async (target) => {
+      // Fetch the target URL (the browser will go through the Express static server)
+      async function fetchViaProxy(target) {
         setLoading(true);
         setOutput('⏳ Loading…');
         try {
@@ -80,36 +82,37 @@
           setOutput('❌ Error: ' + e.message);
         }
         setLoading(false);
-      };
+      }
 
-      const handleClick = () => {
+      function handleClick() {
         if (!url.trim()) {
           setOutput('⚠️ Please enter a URL.');
           return;
         }
         fetchViaProxy(url.trim());
-      };
+      }
 
+      // ----- Return the UI tree using `h()` (Preact’s hyperscript) -----
       return h('div', null,
-        h('div', {className:'field-group'},
-          h('label', {htmlFor:'url'}, 'Target URL'),
+        h('div', {className: 'field-group'},
+          h('label', {htmlFor: 'url'}, 'Target URL'),
           h('input', {
-            id:'url',
-            type:'text',
-            placeholder:'https://example.com/api/…',
-            value:url,
-            onInput:e=>setUrl(e.target.value),
-            onKeyPress:e=>{ if(e.key==='Enter') handleClick(); }
+            id: 'url',
+            type: 'text',
+            placeholder: 'https://example.com/api/…',
+            value: url,
+            onInput: e => setUrl(e.target.value),
+            onKeyPress: e => { if (e.key === 'Enter') handleClick(); }
           })
         ),
-        h('button', {onClick:handleClick, disabled:loading},
+        h('button', {onClick: handleClick, disabled: loading},
           loading ? 'Fetching…' : 'Fetch via Proxy'
         ),
-        output && h('pre', {className:'result'}, output)
+        output && h('pre', {className: 'result'}, output)
       );
     }
 
-    // Render the app into the placeholder div
+    // Mount the component into the placeholder div
     render(h(App, null), document.getElementById('app-root'));
   </script>
 </body>
