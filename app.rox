@@ -1,117 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Proxy</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Proxy UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ==== Embedded CSS (reset + modern styling) ==== -->
-<style>
-/* -------- Reset & base -------- */
-*,*::before,*::after{box-sizing:border-box;}
-html,body{margin:0;height:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f9fafb;color:#111;display:flex;flex-direction:column;}
+  <!-- ==== Embedded CSS (reset + modern styling) ==== -->
+  <style>
+    /* ---------- Reset & base ---------- */
+    *,*::before,*::after{box-sizing:border-box;}
+    html,body{margin:0;height:100%;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:#f9fafb;color:#111;display:flex;flex-direction:column;}
 
-/* -------- Layout -------- */
-header{background:#0066ff;color:#fff;padding:1rem 1.5rem;text-align:center;font-size:1.5rem;font-weight:600;}
-main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
-.card{
-  background:#fff;border-radius:.75rem;box-shadow:0 2px 8px rgba(0,0,0,.08);
-  max-width:460px;width:100%;padding:1.5rem;
-}
-.field-group{margin-bottom:1rem;}
-label{display:block;margin-bottom:.35rem;font-weight:500;}
-input[type=text],input[type=url],textarea{
-  width:100%;padding:.6rem .8rem;border:1px solid #ccc;border-radius:.4rem;font-size:1rem;
-  transition:border-color .2s ease,box-shadow .2s ease;
-}
-input:focus{outline:none;border-color:#0066ff;box-shadow:0 0 0 2px rgba(0,102,255,.15);}
-button{
-  width:100%;padding:.75rem;background:#0066ff;color:#fff;border:none;border-radius:.4rem;
-  font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s ease,transform .1s ease;
-}
-button:hover{background:#0052cc;}
-button:active{transform:scale(.98);}
-.result{
-  margin-top:1rem;padding:.8rem;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:.4rem;
-  overflow-x:auto;font-family:monospace;white-space:pre-wrap;word-break:break-word;
-}
-footer{text-align:center;padding:.8rem;font-size:.85rem;color:#555;}
-@media(max-width:480px){.card{padding:1rem;}button{font-size:.95rem;}}
-</style>
+    /* ---------- Layout ---------- */
+    header{background:#0066ff;color:#fff;padding:1rem 1.5rem;text-align:center;font-size:1.5rem;font-weight:600;}
+    main{flex:1;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+    .card{
+      background:#fff;border-radius:.75rem;box-shadow:0 2px 8px rgba(0,0,0,.08);
+      max-width:460px;width:100%;padding:1.5rem;
+    }
+    .field-group{margin-bottom:1rem;}
+    label{display:block;margin-bottom:.35rem;font-weight:500;}
+    input[type=text],input[type=url],textarea{
+      width:100%;padding:.6rem .8rem;border:1px solid #ccc;border-radius:.4rem;font-size:1rem;
+      transition:border-color .2s ease,box-shadow .2s ease;
+    }
+    input:focus{outline:none;border-color:#0066ff;box-shadow:0 0 0 2px rgba(0,102,255,.15);}
+    button{
+      width:100%;padding:.75rem;background:#0066ff;color:#fff;border:none;border-radius:.4rem;
+      font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s ease,transform .1s ease;
+    }
+    button:hover{background:#0052cc;}
+    button:active{transform:scale(.98);}
+    .result{
+      margin-top:1rem;padding:.8rem;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:.4rem;
+      overflow-x:auto;font-family:monospace;white-space:pre-wrap;word-break:break-word;
+    }
+    footer{text-align:center;padding:.8rem;font-size:.85rem;color:#555;}
+    @media(max-width:480px){.card{padding:1rem;}button{font-size:.95rem;}}
+  </style>
 
-<!-- ==== Preact (tiny React‑compatible lib) ==== -->
-<script src="https://unpkg.com/preact@10.19.2/dist/preact.min.js"></script>
-<script src="https://unpkg.com/preact@10.19.2/hooks/dist/hooks.min.js"></script>
-<script src="https://unpkg.com/preact@10.19.2/compat/dist/compat.min.js"></script>
-<script>
-  const { h, render, Component } = preact;
-  const { useState } = preactHooks;
-</script>
-
+  <!-- ==== Preact (tiny React‑compatible lib) ==== -->
+  <script src="https://unpkg.com/preact@10.19.2/dist/preact.min.js"></script>
+  <script src="https://unpkg.com/preact@10.19.2/hooks/dist/hooks.min.js"></script>
+  <script src="https://unpkg.com/preact@10.19.2/compat/dist/compat.min.js"></script>
+  <script>
+    const { h, render } = preact;
+    const { useState } = preactHooks;
+  </script>
 </head>
+
 <body>
-<header>Simple Proxy UI</header>
-<main>
-  <div class="card" id="app-root"></div>
-</main>
-<footer>© 2025 Proton – Lumo Demo</footer>
+  <header>Simple Proxy UI</header>
+  <main>
+    <div class="card" id="app-root"></div>
+  </main>
+  <footer>© 2025 Proton – Lumo Demo</footer>
 
-<!-- ==== Embedded JavaScript (no build step) ==== -->
-<script>
-/* ---------- App component (mirrors your original App.jsx) ---------- */
-function App() {
-  const [url, setUrl] = useState('');
-  const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(false);
+  <!-- ==== Embedded JavaScript (no build step) ==== -->
+  <script>
+    function App() {
+      const [url, setUrl] = useState('');
+      const [output, setOutput] = useState('');
+      const [loading, setLoading] = useState(false);
 
-  const fetchViaProxy = async (target) => {
-    setLoading(true);
-    setOutput('⏳ Loading…');
-    try {
-      const resp = await fetch(target, { mode: 'cors' });
-      const ct = resp.headers.get('content-type') || '';
-      if (ct.includes('application/json')) {
-        const data = await resp.json();
-        setOutput(JSON.stringify(data, null, 2));
-      } else {
-        const txt = await resp.text();
-        setOutput(txt);
-      }
-    } catch (e) {
-      setOutput('❌ Error: ' + e.message);
+      const fetchViaProxy = async (target) => {
+        setLoading(true);
+        setOutput('⏳ Loading…');
+        try {
+          const resp = await fetch(target, { mode: 'cors' });
+          const ct = resp.headers.get('content-type') || '';
+          if (ct.includes('application/json')) {
+            const data = await resp.json();
+            setOutput(JSON.stringify(data, null, 2));
+          } else {
+            const txt = await resp.text();
+            setOutput(txt);
+          }
+        } catch (e) {
+          setOutput('❌ Error: ' + e.message);
+        }
+        setLoading(false);
+      };
+
+      const handleClick = () => {
+        if (!url.trim()) {
+          setOutput('⚠️ Please enter a URL.');
+          return;
+        }
+        fetchViaProxy(url.trim());
+      };
+
+      return h('div', null,
+        h('div', {className:'field-group'},
+          h('label', {htmlFor:'url'}, 'Target URL'),
+          h('input', {
+            id:'url',
+            type:'text',
+            placeholder:'https://example.com/api/…',
+            value:url,
+            onInput:e=>setUrl(e.target.value),
+            onKeyPress:e=>{ if(e.key==='Enter') handleClick(); }
+          })
+        ),
+        h('button', {onClick:handleClick, disabled:loading},
+          loading ? 'Fetching…' : 'Fetch via Proxy'
+        ),
+        output && h('pre', {className:'result'}, output)
+      );
     }
-    setLoading(false);
-  };
 
-  const handleClick = () => {
-    if (!url.trim()) {
-      setOutput('⚠️ Please enter a URL.');
-      return;
-    }
-    fetchViaProxy(url.trim());
-  };
-
-  return h('div', null,
-    h('div', {className:'field-group'},
-      h('label', {htmlFor:'url'}, 'Target URL'),
-      h('input', {
-        id:'url',
-        type:'text',
-        placeholder:'https://example.com/api/…',
-        value:url,
-        onInput:e=>setUrl(e.target.value),
-        onKeyPress:e=>{ if(e.key==='Enter') handleClick(); }
-      })
-    ),
-    h('button', {onClick:handleClick, disabled:loading},
-      loading ? 'Fetching…' : 'Fetch via Proxy'
-    ),
-    output && h('pre', {className:'result'}, output)
-  );
-}
-
-/* ---------- Render the app into the single‑file page ---------- */
-render(h(App, null), document.getElementById('app-root'));
-</script>
+    // Render the app into the placeholder div
+    render(h(App, null), document.getElementById('app-root'));
+  </script>
 </body>
 </html>
